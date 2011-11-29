@@ -10,10 +10,10 @@ using namespace std;
 #include "object.h"
 #include "sphere.h"
 #include "light.h"
-#include "orOp.h"
 #include "triangle.h"
 
 const int negInf = 0xc0c0c0c0;
+const int inf = 0x3f3f3f3f;
 
 Raytracer::Raytracer(double width, double height, double near,
 		double far) : w(width), h(height), znear(near), zfar(far) {
@@ -24,8 +24,6 @@ Raytracer::Raytracer(double width, double height, double near,
 
 	currMode = ORTHO;		
 	raysPP=3;
-
-	OrOp* scene = new OrOp;
 
 	Material redPlastic(Vector(0.1,0.1,0.1,0.0),
 			Vector(0.5,0.05,0.1,0.0),
@@ -42,10 +40,9 @@ Raytracer::Raytracer(double width, double height, double near,
 	Sphere* sp1 = new Sphere(redPlastic,
 		Vector(400.0, 400.0, 200.0), 70.0);
 	
-	scene->addChildren(tri1);
-	scene->addChildren(sp0);
-	scene->addChildren(sp1);
-	root=scene;
+	objs.push_back(sp0);
+	objs.push_back(sp1);
+	objs.push_back(tri1);
 
 	//Test source
 	Light* light0 = new Light(Vector(600.0,600.0, 200.0),
@@ -85,9 +82,22 @@ Vector Raytracer::getColor(double px, double py) {
 	}
 	
 	Ray r(o,d);
+	Object* obj=NULL;
+	int minZ=inf; 
 
-	Object* obj = root->checkIntersection(r);
-	
+	for (int i=0; i<objs.size(); i++) {
+		Object* tmp=objs[i]->checkIntersection(r);
+		
+		if (tmp) {
+			Vector tmpPt=objs[i]->getIntersectionPoint(r);
+			
+			if (tmpPt.z<minZ) {
+				obj=tmp;
+				minZ = tmpPt.z;
+			} 
+		}
+	}	
+
 	if (!obj) return bgVec;
 
 	Vector color(0.0,0.0,0.0,0.0);

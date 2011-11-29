@@ -1,13 +1,12 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
-#include "node.h"
 #include "material.h"
 
 class Ray;
 class Vector;
 
-class Object : public Node {
+class Object {
 	Material mat;	
 
 	public:

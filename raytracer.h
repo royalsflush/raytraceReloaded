@@ -5,36 +5,21 @@
 using namespace std;
 
 #include "vector.h"
-#include "node.h" 
 #include "light.h"
+#include "object.h"
 
 enum tracerMode {
 	ORTHO, PERSPECTIVE 
 };
 
 class Raytracer {
-	//Camera parameters
 	double znear,zfar;
-
-	//Camera position
 	Vector eye;
-
-	//Window size
 	double w,h;
-
-	//Background colour
 	Vector bgVec;
-
-	//Projection mode
 	tracerMode currMode;
-
-	//Scene tree
-	Node* root;
-
-	//Light vector
 	vector<Light*> lights;
-
-	//Rays per pixel
+	vector<Object*> objs;
 	int raysPP; 
 
 	public:
